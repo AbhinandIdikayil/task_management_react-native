@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { signupValidation } from "../utils/validator/signupValidator";
 import ErrorResponse from "../utils/ErrorResponse";
 import { loginValidator } from "../utils/validator/loginValidator";
