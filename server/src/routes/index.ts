@@ -8,6 +8,6 @@ const userRepo = new UserRepo()
 const userService = new UserService(userRepo)
 const authController = new AuthController(userService)
 
-router.route('/login').post(authController.login.bind(authController))
-router.route('/signup').post(authController.signup.bind(authController))
+router.route('/auth/login').post(authController.login.bind(authController))
+router.route('/auth/register').post(authController.signup.bind(authController))
 

@@ -1,5 +1,6 @@
 import { IUserRepo, signupType } from "../interfaces/IRepo";
 import { IUserService } from "../interfaces/IService";
+import { UserDoc } from "../models/userModel";
 import ErrorResponse from "../utils/ErrorResponse";
 import { generateToken } from "../utils/generateToken";
 
@@ -9,7 +10,7 @@ export class UserService implements IUserService {
     constructor(repo: IUserRepo) {
         this.repo = repo
     }
-    async loginService(data: { email: string; password: string; }): Promise<string | null> {
+    async loginService(data: { email: string; password: string; }): Promise<UserDoc | null> {
         const existingUser = await this.repo.findByEmail(data.email);
         if (!existingUser) {
             throw ErrorResponse.badRequest('User not found')
@@ -18,17 +19,15 @@ export class UserService implements IUserService {
         if (!matchPassword) {
             throw ErrorResponse.badRequest('Password incorrect')
         }
-        const token = generateToken(existingUser?._id)
-        return token
+
+        return existingUser;
     }
-    async signupService(data: signupType): Promise<string | null> {
+    async signupService(data: signupType): Promise<UserDoc | null> {
         const existingUser = await this.repo.findByEmail(data.email);
         if (existingUser) {
             throw ErrorResponse.badRequest('User already exist')
         }
 
-        const user = await this.repo.signup(data);
-
-        return generateToken(user._id)
+        return await this.repo.signup(data);
     }
 }

@@ -3,6 +3,7 @@ import { signupValidation } from "../utils/validator/signupValidator";
 import ErrorResponse from "../utils/ErrorResponse";
 import { loginValidator } from "../utils/validator/loginValidator";
 import { IUserService } from "../interfaces/IService";
+import { generateToken } from "../utils/generateToken";
 
 
 export class AuthController {
@@ -14,11 +15,23 @@ export class AuthController {
         try {
             const { error, value } = loginValidator.validate(req.body)
             if (error) {
-                console.log(error?.message)
-                throw ErrorResponse.badRequest(error?.message || 'Invalid request data');
+                const formattedErrors = error.details.map((err) => ({
+                    message: err.message.replace(/["\\]/g, ''),
+                    field: err.path.join('.'),
+                }));
+
+                throw ErrorResponse.badRequest(
+                    formattedErrors,
+                );
             }
             const data = await this.service.loginService(value);
-            return res.status(200).json({ token: data, success: true })
+            const token = generateToken(data?._id)
+            return res.status(200).json({
+                token, userData: {
+                    name: data?.name,
+                    email: data?.email
+                }, success: true
+            })
         } catch (error) {
             next(error)
         }
@@ -27,11 +40,23 @@ export class AuthController {
         try {
             const { error, value } = signupValidation.validate(req.body);
             if (error) {
-                console.log(error?.message)
-                throw ErrorResponse.badRequest(error?.message || 'Invalid request data');
+                const formattedErrors = error.details.map((err) => ({
+                    message: err.message.replace(/["\\]/g, ''),
+                    field: err.path.join('.'),
+                }));
+
+                throw ErrorResponse.badRequest(
+                    formattedErrors,
+                );
             }
-            const token = await this.service.signupService(value)
-            return res.status(200).json({ token, success: true })
+            const data = await this.service.signupService(value)
+            const token = generateToken(data?._id)
+            return res.status(200).json({
+                token, userData: {
+                    name: data?.name,
+                    email: data?.email
+                }, success: true
+            })
         } catch (error) {
             next(error)
         }

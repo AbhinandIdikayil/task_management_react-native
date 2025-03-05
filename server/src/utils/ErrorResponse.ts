@@ -10,7 +10,7 @@ export default class ErrorResponse extends Error {
         this.success = false;
     }
 
-    static badRequest(msg: string): ErrorResponse {
+    static badRequest(msg: any): ErrorResponse {
         return new ErrorResponse(400, msg || "Bad Request");
     }
 

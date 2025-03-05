@@ -9,8 +9,15 @@ import { connectDB } from './config/dbConnection';
 const app = express();
 
 
-app.use(cors());
 app.use(express.json());
+app.use(
+    cors({
+        origin: '*',
+        methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+        allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+        credentials: true 
+    })
+);
 app.use('/api', router);
 app.use(errorHandler);
 
