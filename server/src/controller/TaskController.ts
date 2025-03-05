@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { ITaskService } from "../interfaces/IService";
 import ErrorResponse from "../utils/ErrorResponse";
 
-class TaskController {
+export class TaskController {
     private service: ITaskService
     constructor(service: ITaskService) {
         this.service = service
@@ -44,6 +44,16 @@ class TaskController {
             if (!id) throw ErrorResponse.badRequest('params should contain id');
             const data = await this.service.deleteTask(id);
             return res.status(200).json({ message: 'task deleted successfully', id: data?._id });
+        } catch (error) {
+            next(error)
+        }
+    }
+    async getTask(req:Request, res:Response, next:NextFunction) {
+        try {
+            const {id} = req.params
+            if (!id) throw ErrorResponse.badRequest('params should contain id');
+            const data = await this.service.findOneTask(id)
+            return res.status(200).json({message:'successfull', data})
         } catch (error) {
             next(error)
         }
